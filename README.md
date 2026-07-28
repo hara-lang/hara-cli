@@ -21,5 +21,5 @@ The package registry is separate:
 ## Worker
 
 `worker/` configures the `cli.hara-lang.org` Worker. Its `/install` endpoint
-fetches this repository's installer source only; it does not serve package
+redirects to this repository's installer source; it does not serve package
 archives or establish package trust.

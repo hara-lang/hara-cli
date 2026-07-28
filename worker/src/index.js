@@ -28,22 +28,11 @@ export default {
       return new Response("not found\n", { status: 404, headers: CORS });
     }
 
-    const upstream = await fetch(INSTALLER, {
-      headers: { "User-Agent": "hara-cli-installer" },
-      cf: { cacheTtl: 300, cacheEverything: true },
-    });
-    if (!upstream.ok) {
-      return new Response("installer unavailable\n", {
-        status: 503,
-        headers: { "Cache-Control": "no-store", ...CORS },
-      });
-    }
-
-    return new Response(request.method === "HEAD" ? null : upstream.body, {
+    return new Response(null, {
+      status: 302,
       headers: {
-        "Content-Type": "text/x-shellscript; charset=utf-8",
+        Location: INSTALLER,
         "Cache-Control": "public, max-age=300",
-        "X-Content-Type-Options": "nosniff",
         ...CORS,
       },
     });
