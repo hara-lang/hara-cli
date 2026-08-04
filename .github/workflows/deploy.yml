@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
     paths: [worker/**, .github/workflows/deploy.yml]
+  pull_request:
+    branches: [main]
+    types: [closed]
   workflow_dispatch:
 
 permissions:
@@ -15,6 +18,10 @@ concurrency:
 
 jobs:
   deploy:
+    if: >-
+      github.event_name != 'pull_request' ||
+      (github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.title, '[deploy]'))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -45,3 +52,18 @@ jobs:
           accountId: ${{ steps.cloudflare.outputs.account_id }}
           workingDirectory: worker
           command: deploy
+      - name: Verify live OG metadata
+        run: |
+          page="$(mktemp)"
+          for attempt in {1..20}; do
+            if curl --fail --silent --show-error --location --max-time 20 \
+                https://cli.hara-lang.org/ >"$page" \
+              && grep -q 'property="og:image"' "$page" \
+              && grep -q 'property="og:image:width" content="3840"' "$page"; then
+              echo "Verified the CLI OG metadata."
+              exit 0
+            fi
+            [[ "$attempt" -lt 20 ]] && sleep 15
+          done
+          echo "cli.hara-lang.org did not publish the expected OG metadata." >&2
+          exit 1
