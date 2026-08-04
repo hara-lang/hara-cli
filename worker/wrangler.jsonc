@@ -3,6 +3,10 @@
   "main": "src/index.js",
   "compatibility_date": "2026-07-28",
   "workers_dev": true,
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
   "routes": [
     {
       "pattern": "cli.hara-lang.org",
