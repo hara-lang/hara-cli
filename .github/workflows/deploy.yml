@@ -1,0 +1,47 @@
+name: Deploy cli.hara-lang.org
+
+on:
+  push:
+    branches: [main]
+    paths: [worker/**, .github/workflows/deploy.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-hara-cli
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Test Worker contracts
+        run: npm test
+        working-directory: worker
+      - name: Resolve the Cloudflare account
+        id: cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN"
+          curl --fail-with-body --silent --show-error \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/zones?name=hara-lang.org&status=active" \
+            > zones.json
+          account_id="$(jq -r '.result[0].account.id // empty' zones.json)"
+          test -n "$account_id"
+          echo "account_id=$account_id" >> "$GITHUB_OUTPUT"
+      - name: Deploy Worker and static OG asset
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ steps.cloudflare.outputs.account_id }}
+          workingDirectory: worker
+          command: deploy
