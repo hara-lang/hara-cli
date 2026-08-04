@@ -30,6 +30,11 @@ const LANDING_PAGE = `<!doctype html>
   <meta name="twitter:image" content="https://cli.hara-lang.org/og-hara-cli.jpg">
   <meta name="twitter:image:alt" content="Hara CLI — install Hara">
   <link rel="canonical" href="https://cli.hara-lang.org/">
+  <style>
+    body { max-width: 860px; margin: 0 auto; padding: 48px 24px; font: 16px/1.6 system-ui, sans-serif; }
+    pre { overflow:auto; padding:18px; background:#0b1016; color:#f4f6f8; }
+    footer { display:flex; justify-content:space-between; gap:16px; margin-top:64px; padding-top:20px; border-top:1px solid currentColor; font-size:.82rem; }
+  </style>
 </head>
 <body>
   <main>
@@ -38,6 +43,10 @@ const LANDING_PAGE = `<!doctype html>
     <pre><code>curl -fsSL https://cli.hara-lang.org/install | sh -- --rust</code></pre>
     <p><a href="https://www.hara-lang.org/docs/getting-started/cli/">Read the installation guide</a></p>
   </main>
+  <footer>
+    <a href="https://opensource.greenways.ai/open-source/">A Greenways Open Source Project</a>
+    <a href="https://github.com/hara-lang/hara-cli/blob/main/LICENSE">Apache-2.0</a>
+  </footer>
 </body>
 </html>`;
 
