@@ -30,7 +30,7 @@ Never put release credentials or Cloudflare tokens in the repository.
 Focused Worker validation:
 
 ```sh
-(cd worker && npm test -- --test-name-pattern="installer endpoint")
+(cd worker && node --test --test-name-pattern="installer endpoint" test/*.test.mjs)
 ```
 
 Normal Worker validation:
